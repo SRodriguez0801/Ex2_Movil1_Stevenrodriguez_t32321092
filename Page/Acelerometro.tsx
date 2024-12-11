@@ -31,14 +31,25 @@ export default function Acelerometro() {
 
   }
 
-const guardarDat =async(datos:{x:number, y:number} )=>{
-    try {
-        const response = await api.post(`/logs`, datos );
-        Alert.alert('Exito', 'Guardado exitosamente')
-    } catch (error) {
-        Alert.alert('Error', 'Ocurrio un error')
+  const fecha = () =>{
+    return new Date().toISOString();
+  };
 
-}
+  const guardarDat = async ({ x, y }: { x: number; y: number }) => {
+    try {
+   
+      const datos = {
+        postitionX: Math.round(x),
+        positionY: Math.round(y),
+        fecha: fecha(),
+      };
+
+      await api.post('/logs', datos);
+    
+    } catch (error) {
+      console.error('Error al guardar los datos:', error);
+    }
+  };
 
   useEffect(()=>{
     //plugin acelerometro
@@ -48,7 +59,6 @@ const guardarDat =async(datos:{x:number, y:number} )=>{
 
         setData(acelerometroData);
         updatePosicionBalon(acelerometroData)
-        guardarDat(acelerometroData)
         
     });
 
@@ -58,6 +68,10 @@ const guardarDat =async(datos:{x:number, y:number} )=>{
 
 
   }, [])
+
+  useEffect(() => {
+    guardarDat({ x: pocisionBalon.x, y: pocisionBalon.y });
+  }, [pocisionBalon]);
 
 
   return (
@@ -106,4 +120,4 @@ const style = StyleSheet.create({
     }
 
 
-})}
+})
